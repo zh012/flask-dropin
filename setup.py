@@ -5,7 +5,7 @@ from setuptools import setup
 options = dict(
     name='Flask-DropIn',
     version='0.0.1',
-    description='Flask-DropIn let you easily organize larger project.',
+    description='Flask-DropIn let you easily organize large project.',
     author='Jerry Zhang',
     author_email='hui.calife@gmail.com',
     url='https://github.com/zh012/flask-dropin.git',
@@ -15,15 +15,15 @@ options = dict(
     platforms='any',
     install_requires=[
         'Flask>=0.10',
-        'click>=2.0'
+        'click>=2.0',
+        'six>=1.10',
     ],
     tests_require=[
-        'pytest>=2.7.1'
+        'pytest>=2.7.1',
+        'pytest-cov>=2.2.0',
     ],
     entry_points={
-        'console_scripts': [
-            'dropin = flask_dropin.cli:main'
-        ]
+        'console_scripts': []
     },
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
