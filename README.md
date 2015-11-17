@@ -5,6 +5,7 @@ The **Flask-DropIn** makes organizing large flask application easier. You can br
 `dropins`, which is similiar concept as Django's app, and Flask-DropIn will automatically pick them
 up, and assemble different parts into your flask application.
 
+Read the full [documentation](https://pythonhosted.org/Flask-DropIn/).
 
 Installation
 ------------
@@ -64,5 +65,3 @@ Now, open the urls
 
 in browser, you will find that the blueprints are registered to the app automatically.
 
-
-#### View full documenation from [here]().

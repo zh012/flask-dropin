@@ -1,0 +1,18 @@
+language: python
+
+python:
+  - "2.6"
+  - "2.7"
+  - "pypy"
+  - "3.3"
+  - "3.4"
+
+install: "python setup.py develop"
+
+before_script:
+   - mkdir -p shippable/testresults
+   - mkdir -p shippable/codecoverage
+
+script:
+    - py.test --junitxml=shippable/testresults/pytest.xml
+    - "py.test --cov=flask_dropin --cov-report xml && mv coverage.xml shippable/codecoverage"
