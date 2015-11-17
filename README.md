@@ -1,3 +1,5 @@
+[![](https://img.shields.io/shippable/564b73031895ca447423b473.svg)](https://app.shippable.com/builds/564b892b34a1910d00295bfb)
+
 Flask-DropIn
 ============
 
