@@ -99,8 +99,8 @@ class BaseNamedDropsLoader(BaseDropsLoader):
             else:
                 yield d
 
-    def register_drops(self, app, dropin):
-        drops = app.extensions['dropin'].setdefault(self.drops_type, DotDict(disable_update=True))
+    def register_drops(self, dropin):
+        drops = self.app.extensions['dropin'].setdefault(self.drops_type, DotDict(disable_update=True))
         drops += dict(self.load_drops(dropin))
 
 

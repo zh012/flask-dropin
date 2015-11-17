@@ -25,6 +25,9 @@ class BaseDropsLoader(object):
     """
     drops_type = None
 
+    def __init__(self, app):
+        self.app = app
+
     def load_drops(self, dropin):
         """Load `drops` from the given dropin.
 
@@ -45,15 +48,13 @@ class BaseDropsLoader(object):
 
             import dropin.articles.models as drops
 
-        if the current drops object has attribute **__drops__**::
+        if the current drops object has attribute **__drops__** ::
 
             drops = drops.__drops__
 
-        if the current drops object is a callable::
+        if the current drops object is a callable ::
 
             drops = drops()
-
-        now, the drops will be returned.
 
         if not drops was found, an empty list is returned.
 
@@ -69,10 +70,10 @@ class BaseDropsLoader(object):
         if hasattr(drops, '__drops__'):
             drops = drops.__drops__
         if callable(drops):
-            drops = drops()
+            drops = drops(self.app)
         return drops or []
 
-    def register_drops(self, app, dropin):
+    def register_drops(self, dropin):
         """Register the `drops` in given `dropin` to a flask app.
 
         Args:
@@ -98,7 +99,7 @@ class BaseDropsLoader(object):
         Whereas the BlueprintsLoader overrided this method to actually register
         the blueprints to the app.
         """
-        drops = app.extensions['dropin'].setdefault(self.drops_type, [])
+        drops = self.app.extensions['dropin'].setdefault(self.drops_type, [])
         drops.extend(self.load_drops(dropin))
 
 
@@ -119,17 +120,17 @@ class BlueprintsLoader(BaseDropsLoader):
     """
     drops_type = 'blueprints'
 
-    def register_drops(self, app, dropin):
-        trans = app.config.get('DROPIN_BLUEPRINTS_TRANSFORM') or {}
+    def register_drops(self, dropin):
+        trans = self.app.config.get('DROPIN_BLUEPRINTS_TRANSFORM') or {}
         if '*' in trans:
             default_trans = trans['*']
         else:
             default_trans = lambda pf: None
         for bp in self.load_drops(dropin):
             if bp.url_prefix in trans:
-                app.register_blueprint(bp, url_prefix=trans[bp.url_prefix])
+                self.app.register_blueprint(bp, url_prefix=trans[bp.url_prefix])
             elif default_trans:
-                app.register_blueprint(bp, url_prefix=default_trans(bp.url_prefix))
+                self.app.register_blueprint(bp, url_prefix=default_trans(bp.url_prefix))
 
 
 class MiddlewaresLoader(BaseDropsLoader):
@@ -140,11 +141,11 @@ class MiddlewaresLoader(BaseDropsLoader):
     """
     drops_type = 'middlewares'
 
-    def register_drops(self, app, dropin):
+    def register_drops(self, dropin):
         for mw in self.load_drops(dropin):
             for cb in ['before_request', 'after_request', 'teardown_request']:
                 if hasattr(mw, cb):
-                    getattr(app, cb)(getattr(mw, cb))
+                    getattr(self.app, cb)(getattr(mw, cb))
 
 
 class ContextProcessorsLoader(BaseDropsLoader):
@@ -152,9 +153,9 @@ class ContextProcessorsLoader(BaseDropsLoader):
     """
     drops_type = 'context_processors'
 
-    def register_drops(self, app, dropin):
+    def register_drops(self, dropin):
         for cp in self.load_drops(dropin):
-            app.context_processor(cp)
+            self.app.context_processor(cp)
 
 
 default_loaders = [
@@ -168,7 +169,7 @@ default_loaders = [
 
 class DropInManager(object):
     """A flask extension to initialize flask app with activated dropins, and also provide
-    shortcut to access drops object if avialable.
+    shortcut to access drops object if available.
 
     Its behavior is controled by three settings.
 
@@ -176,7 +177,7 @@ class DropInManager(object):
 
     **DROPINS_ITER**: a callable (or python path to the callable) which return a list of dropins.
 
-    **DROPIN_LOADERS**: a list of drops loader (or python path to drops loader). If not provided,
+    **DROPS_LOADERS**: a list of drops loader (or python path to drops loader). If not provided,
     ther following loaders will be used::
 
             [
@@ -186,6 +187,16 @@ class DropInManager(object):
                 flask_dropin.ContextProcessorsLoader,
                 flask_dropin.ServicesLoader,
             ]
+
+    Usage:
+        Same as other flask extensions, DropInManager could be used in two flavors::
+
+            dropin = DropInManager(app)
+
+        or::
+
+            dropin = DropInManager()
+            dropin.init(app)
 
     """
     def __init__(self, app=None):
@@ -198,7 +209,7 @@ class DropInManager(object):
             if isinstance(l, six.string_types):
                 l = load_object(l)
             if callable(l):
-                l = l()
+                l = l(app)
             yield l
 
     def iter_dropins(self, app):
@@ -222,7 +233,7 @@ class DropInManager(object):
             app.extensions['dropin'] = {}
             for drops_loader in self.iter_loaders(app):
                 for dropin in self.iter_dropins(app):
-                    drops_loader.register_drops(app, dropin)
+                    drops_loader.register_drops(dropin)
 
     def __getattr__(self, key):
         try:

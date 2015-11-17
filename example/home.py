@@ -1,25 +1,31 @@
-from flask import Blueprint, render_template, jsonify
-from flask_dropin import DropInManager
+from flask import Blueprint, jsonify, redirect, url_for
+from app import dropin
 
-dropin = DropInManager()
-
-web = Blueprint('home_web', __name__, url_prefix='/web', template_folder='templates')
+web = Blueprint('home_web', __name__, url_prefix='/web')
 
 
 @web.route('/')
 def landing():
-    get_current_user = dict(dropin.services)['get_current_user']
-    user = get_current_user()
-    return user and 'Hello {}!'.format(user) or 'Please login!'
+    return 'Hello {}!'.format(dropin.services.get_current_user())
+
+
+@web.route('/login/<username>')
+def login_me(username):
+    dropin.services.login_user(username)
+    return redirect(url_for('.landing'))
+
+
+@web.route('/logout')
+def logout_me():
+    dropin.services.logout_user()
+    return redirect(url_for('.landing'))
 
 
 api = Blueprint('home_api', __name__, url_prefix='/api')
 
 
-@api.route('/me')
+@api.route('/version')
 def myprofile():
-    get_current_user = dict(dropin.services)['get_current_user']
-    return jsonify(username=get_current_user())
-
+    return jsonify(version='0.0.0')
 
 blueprints = [web, api]
