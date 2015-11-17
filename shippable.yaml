@@ -9,6 +9,7 @@ python:
 
 install:
   - pip install pytest==2.7.1 pytest-cov==2.2.0
+  - python setup.py develop
 
 before_script:
    - mkdir -p shippable/testresults
