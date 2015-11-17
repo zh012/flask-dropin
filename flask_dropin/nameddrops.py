@@ -87,13 +87,25 @@ class DotDict(object):
 
 
 class BaseNamedDropsLoader(BaseDropsLoader):
+    def load_drops(self, dropin):
+        drops = super(BaseNamedDropsLoader, self).load_drops(dropin)
+        for d in drops:
+            if isinstance(d, (list, tuple)):
+                yield d
+            elif hasattr(d, '__name__'):
+                yield d.__name__, d
+            elif hasattr(d, 'func_name'):
+                yield d.func_name, d
+            else:
+                yield d
+
     def register_drops(self, app, dropin):
         drops = app.extensions['dropin'].setdefault(self.drops_type, DotDict(disable_update=True))
-        drops += self.load_drops(dropin)
+        drops += dict(self.load_drops(dropin))
 
 
 class NamedModelsLoader(BaseNamedDropsLoader):
-    """Load drops with type `models`. The difference with default **ModelsLoader** is that this loader
+    """Load drops with type `models`. The difference with to **ModelsLoader** is that this loader
     require the drops to be provided by name/value pairs. These models will be stored in a DotDict
     object, so that it could be referenced by dotted notation. In addition, it will check if there
     is name conflict among the `models` provided by each `dropin`.

@@ -21,9 +21,12 @@ def me():
 blueprints = [web, api]
 
 
+def get_current_user():
+    return 'tester'
+
 services = [
     ('version', '1.1.1'),
-    ('get_current_user', lambda: 'tester')
+    get_current_user
 ]
 
 

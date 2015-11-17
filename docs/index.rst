@@ -5,9 +5,13 @@ The **Flask-DropIn** makes organizing large flask application easier. You can br
 `dropins`, which is similiar concept as Django's app, and Flask-DropIn will automatically pick them
 up, and assemble different parts into your flask application.
 
+.. contents::
+   :local:
+   :backlinks: None
 
-Install Flask-DropIn
---------------------
+
+Installation
+------------
 
 Install with **pip** and **easy_install**::
 
@@ -18,6 +22,14 @@ or download the latest version from version control::
     git clone https://github.com/smurfix/flask-dropin.git
     cd flask-script
     python setup.py develop
+
+
+Create a Flask application
+--------------------------
+
+As usual, we will have a ```app.py``` file
+
+
 
 Api
 ---
