@@ -21,6 +21,7 @@ options = dict(
     tests_require=[
         'pytest>=2.7.1',
         'pytest-cov>=2.2.0',
+        'tox',
     ],
     entry_points={
         'console_scripts': []
