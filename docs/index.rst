@@ -314,3 +314,8 @@ Api
 .. module:: flask_dropin.nameddrops
 .. autoclass:: NamedModelsLoader
 .. autoclass:: NamedServicesLoader
+
+
+Changes
+-------
+.. include:: ../CHANGES
