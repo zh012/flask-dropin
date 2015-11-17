@@ -7,7 +7,8 @@ python:
   - "3.3"
   - "3.4"
 
-install: "python setup.py develop"
+install:
+  - pip install pytest==2.7.1 pytest-cov==2.2.0
 
 before_script:
    - mkdir -p shippable/testresults
@@ -15,4 +16,4 @@ before_script:
 
 script:
     - py.test --junitxml=shippable/testresults/pytest.xml
-    - "py.test --cov=flask_dropin --cov-report xml && mv coverage.xml shippable/codecoverage"
+    - py.test --cov=flask_dropin --cov-report xml && mv coverage.xml shippable/codecoverage/

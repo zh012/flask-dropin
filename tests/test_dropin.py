@@ -86,6 +86,11 @@ def setup_app(config):
     return app, dropin
 
 
+def get_data(client, path):
+    response = client.get(path, follow_redirects=True)
+    return response.data.decode(response.content_encoding or 'utf8')
+
+
 @pytest.mark.parametrize('config', dropin_configs)
 def test_dropin(config):
     app, dropin = setup_app(config)
@@ -94,8 +99,8 @@ def test_dropin(config):
         assert dropin.services.version == '1.1.1'
         assert dropin.services.get_current_user() == 'tester'
     with app.test_client() as c:
-        assert c.get('/web', follow_redirects=True).data == 'Hello!'
-        assert json.loads(c.get('/api/me', follow_redirects=True).data)['name'] == 'jerry'
+        assert get_data(c, '/web') == 'Hello!'
+        assert json.loads(get_data(c, '/api/me'))['name'] == 'jerry'
 
 
 def test_blueprint_transform():
@@ -109,9 +114,9 @@ def test_blueprint_transform():
     })
 
     with app.test_client() as c:
+        assert get_data(c, '/') == 'Hello!'
         assert c.get('/web', follow_redirects=True).status_code == 404
-        assert c.get('/', follow_redirects=True).data == 'Hello!'
-        assert json.loads(c.get('/tr/api/me', follow_redirects=True).data)['name'] == 'jerry'
+        assert json.loads(get_data(c, '/tr/api/me'))['name'] == 'jerry'
 
 
 def test_blueprint_transform_mask():
@@ -125,6 +130,6 @@ def test_blueprint_transform_mask():
     })
 
     with app.test_client() as c:
-        assert c.get('/', follow_redirects=True).data == 'Hello!'
+        assert get_data(c, '/') == 'Hello!'
         assert c.get('/web', follow_redirects=True).status_code == 404
         assert c.get('/api/me', follow_redirects=True).status_code == 404
