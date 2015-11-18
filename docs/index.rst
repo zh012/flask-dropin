@@ -20,7 +20,7 @@ Install with **pip** and **easy_install**::
 or download the latest version from version control::
 
     git clone https://github.com/zh012/flask-dropin.git
-    cd flask-script
+    cd flask-dropin
     python setup.py develop
 
 .. _sample-app:
