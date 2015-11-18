@@ -1,9 +1,9 @@
 Flask-DropIn
 ============
 
-The **Flask-DropIn** makes organizing large flask application easier. You can break your to multiple
-`dropins`, which is similiar concept as Django's app, and Flask-DropIn will automatically pick them
-up, and assemble different parts into your flask application.
+The **Flask-DropIn** makes organizing large flask application easier. You can break your flask app
+to multiple `dropins`, which is a similiar concept as Django's app. Flask-DropIn will automatically
+pick them up, and assemble different parts into your flask application.
 
 .. contents::
    :local:
@@ -19,7 +19,7 @@ Install with **pip** and **easy_install**::
 
 or download the latest version from version control::
 
-    git clone https://github.com/smurfix/flask-dropin.git
+    git clone https://github.com/zh012/flask-dropin.git
     cd flask-script
     python setup.py develop
 
